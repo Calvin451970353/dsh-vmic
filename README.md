@@ -27,7 +27,7 @@ pnpm add link:E:/path/to/dsh-vmic
 
 ```bash
 cd ~/.dsh/profiles/web
-pnpm add github:<your-name>/dsh-vmic
+pnpm add github:Calvin451970353/dsh-vmic
 ```
 
 然后在 `cordis.patch.yml` 追加（保留你已有的 insert 列表）：
