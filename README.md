@@ -20,7 +20,9 @@ DeepSeek Harness（DSH）的语音输入插件：在聊天输入框旁新增一�
 
 ```bash
 cd ~/.dsh/profiles/web
-pnpm add link:E:/path/to/dsh-vmic
+# 本地开发：用 link: 指向插件源码目录（路径按你的实际情况修改）
+# Windows 示例：pnpm add link:C:/path/to/dsh-vmic
+pnpm add link:/path/to/dsh-vmic
 ```
 
 发布版（以 GitHub 仓库为例）：
