@@ -1,6 +1,18 @@
 # dsh-vmic — 语音输入插件（Voice Input for DeepSeek Harness）
 
+<p align="center">
+  <img src="assets/hero.gif" alt="dsh-vmic 录音演示：麦克风按钮 + 实时频谱动画" width="680"/>
+</p>
+
 DeepSeek Harness（DSH）的语音输入插件：在聊天输入框旁新增一个 🎙️ 麦克风按钮（带实时频谱动画），录制 16kHz WAV 语音并转写成文字，填入输入草稿供你审阅——**真正执行请求的仍是 DSH 中当前选中的模型**，语音识别只承担"听写"层，与主模型完全解耦。
+
+## 界面一览
+
+<p align="center">
+  <img src="assets/composer.png" alt="聊天输入框中的麦克风按钮" width="720"/>
+</p>
+
+麦克风按钮位于发送按钮左侧：**点击开始录音，再次点击停止并转写**；右键按钮可随时打开配置面板。
 
 ## 特性
 
@@ -13,6 +25,41 @@ DeepSeek Harness（DSH）的语音输入插件：在聊天输入框旁新增一�
 - 🔒 API Key 只存在于 DSH 服务端（credentials 密封，命名 `VMIC_<ID>_API_KEY`），浏览器只能看到"已配置/未配置"状态，拿不到明文。
 - 🧪 内置供应商连通性测试：发送 0.5s 测试音，返回延迟与识别文本，快速定位网络/鉴权问题。
 - 🌐 中文 / 英文 UI 字符串。
+
+## 使用流程
+
+<p align="center">
+  <img src="assets/flow.png" alt="使用流程：录音 → 流式转写 → 可选润色 → 填入草稿" width="880"/>
+</p>
+
+1. 点击 🎙️ 开始录音（允许浏览器麦克风权限）。
+2. 再次点击（或红色方块）停止：完整音频转写一次。
+3. （可选）开启润色后自动调用 LLM 整理。
+4. 文字进入输入草稿（保留你已有的草稿），检查后回车发送——由当前选中的模型执行。
+
+## 配置
+
+<p align="center">
+  <img src="assets/panel.png" alt="右键打开的配置面板" width="560"/>
+</p>
+
+右键麦克风按钮打开配置面板：
+
+- **供应商**：选择当前使用的供应商（`selectedProvider`）、开关与自定义 `openai-compatible` 供应商（填 `baseUrl` / `model` / Key）。
+- **语言**：`language: auto` 或指定（如 `zh`）。
+- **润色**：`polish.enabled`、是否复用 `DEEPSEEK_API_KEY`、模型与超时。
+
+### API Key
+
+Key 存在 DSH 的 credentials 密封中（`~/.dsh/.credentials.yaml`），引用名（不带 `VMIC_` 前缀的也兼容）：
+
+| 用途 | 引用名 |
+| --- | --- |
+| 小米 MiMo | `VMIC_XIAOMI_MIMO_API_KEY` |
+| 火山豆包 | `VMIC_VOLCENGINE_DOUBAO_API_KEY` |
+| 自定义润色 | `VMIC_POLISH_API_KEY`（或复用 `DEEPSEEK_API_KEY`） |
+
+火山豆包密钥两种格式均支持：`appkey:accesskey`（自动走 `X-Api-App-Key` / `X-Api-Access-Key`）或单 Key（走 `X-Api-Key`）。
 
 ## 安装
 
@@ -60,33 +107,6 @@ pnpm add github:Calvin451970353/dsh-vmic
 重启 `dsh web` 服务并刷新页面。
 
 > 供应商预设的端点/模型已内置，用户只需填入 API Key；`providers` 也可留空，插件会用同样的内置预设。
-
-## 配置
-
-右键麦克风按钮打开配置面板：
-
-- **供应商**：选择当前使用的供应商（`selectedProvider`）、开关与自定义 `openai-compatible` 供应商（填 `baseUrl` / `model` / Key）。
-- **语言**：`language: auto` 或指定（如 `zh`）。
-- **润色**：`polish.enabled`、是否复用 `DEEPSEEK_API_KEY`、模型与超时。
-
-### API Key
-
-Key 存在 DSH 的 credentials 密封中（`~/.dsh/.credentials.yaml`），引用名（不带 `VMIC_` 前缀的也兼容）：
-
-| 用途 | 引用名 |
-| --- | --- |
-| 小米 MiMo | `VMIC_XIAOMI_MIMO_API_KEY` |
-| 火山豆包 | `VMIC_VOLCENGINE_DOUBAO_API_KEY` |
-| 自定义润色 | `VMIC_POLISH_API_KEY`（或复用 `DEEPSEEK_API_KEY`） |
-
-火山豆包密钥两种格式均支持：`appkey:accesskey`（自动走 `X-Api-App-Key` / `X-Api-Access-Key`）或单 Key（走 `X-Api-Key`）。
-
-## 使用
-
-1. 点击 🎙️ 开始录音（允许浏览器麦克风权限）。
-2. 再次点击（或红色方块）停止：完整音频转写一次。
-3. （可选）开启润色后自动调用 LLM 整理。
-4. 文字进入输入草稿（保留你已有的草稿），检查后回车发送——由当前选中的模型执行。
 
 ## 宿主路由（host half）
 
