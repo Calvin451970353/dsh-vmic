@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Voice Input",
+    "description": "Voice input plugin for DeepSeek Harness: a mic button in the chat composer with real-time spectrum animation, 16kHz WAV recording, ASR via pluggable providers (Xiaomi MiMo, Volcengine Doubao live streaming), optional LLM polish, all proxied through same-origin host routes."
+  }
+}
