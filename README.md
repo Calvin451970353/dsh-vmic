@@ -65,6 +65,10 @@ Key 存在 DSH 的 credentials 密封中（`~/.dsh/.credentials.yaml`），引�
 
 > **版本要求**：`1.1.0` 起适配 DeepSeek Harness **0.2.1-rc.2** 及以上（`package.json` 的 `engines.dsh` 与 peer 都指向 0.2.x）。0.2.x 移除了 `@deepseek-ai/dsh-settings` 的 `settingsNamespace`，插件改用插件 `Config` + `.volatile()` 字段 + `configEditor` 写回配置；DSH 0.1.x 请使用 `1.0.0`。
 
+插件自带 bundle patch（`cordis.patch.yml`，由 `package.json` 的 `dsh.bundle.patch` 声明）：装好并启用这个 bundle 层，宿主就会自动插入 `vmic` 行，**不需要手写 `insert`**。
+
+**桌面端**：设置 → 插件 → 添加插件 → 「安装第三方插件」，填本地目录或包名，装完点「立即启用」。桌面端的 profile（`~/.dsh/profiles/desktop`）由应用自己的插件管理器管理，命令行 `dsh plugin --profile desktop` 是被拒绝的。
+
 本地开发（link 依赖，代码改动即时生效）：
 
 ```bash
@@ -81,7 +85,7 @@ cd ~/.dsh/profiles/web
 pnpm add github:Calvin451970353/dsh-vmic
 ```
 
-然后在 `cordis.patch.yml` 追加（保留你已有的 insert 列表）：
+没启用 bundle 层（例如只把包当普通依赖装）时，才需要手工在 `cordis.patch.yml` 追加这一行；启用了就跳过：
 
 ```yaml
 - insert:
@@ -121,6 +125,19 @@ pnpm add github:Calvin451970353/dsh-vmic
     selectedProvider: xiaomi-mimo
     timeoutMs: 30000
 ```
+
+## 展示元信息
+
+插件页卡片和详情页标题旁的图标、标题与简介，来自包根声明：
+
+- `package.json` 的 `icon` → `assets/icons/a-solid-gradient.svg`（96×96 网格，自带圆角底板；管理器接受 SVG / PNG / JPEG / WebP，≤ 256 KiB，且文件必须位于包目录内）。
+- `locale/en.json`、`locale/zh.json` 的 `meta.title` / `meta.description` → 按界面语言显示；缺字段时回退到 `package.json` 的 `name` / `description`。
+
+```json
+{ "meta": { "title": "语音输入", "description": "DeepSeek Harness 语音输入插件：…" } }
+```
+
+`exports` 必须导出 `./locale/*.json`，否则管理器解析不到词典，只会显示英文 manifest 描述。
 
 ## 宿主路由（host half）
 
