@@ -63,6 +63,8 @@ Key 存在 DSH 的 credentials 密封中（`~/.dsh/.credentials.yaml`），引�
 
 ## 安装
 
+> **版本要求**：`1.1.0` 起适配 DeepSeek Harness **0.2.1-rc.2** 及以上（`package.json` 的 `engines.dsh` 与 peer 都指向 0.2.x）。0.2.x 移除了 `@deepseek-ai/dsh-settings` 的 `settingsNamespace`，插件改用插件 `Config` + `.volatile()` 字段 + `configEditor` 写回配置；DSH 0.1.x 请使用 `1.0.0`。
+
 本地开发（link 依赖，代码改动即时生效）：
 
 ```bash
@@ -108,6 +110,18 @@ pnpm add github:Calvin451970353/dsh-vmic
 
 > 供应商预设的端点/模型已内置，用户只需填入 API Key；`providers` 也可留空，插件会用同样的内置预设。
 
+> 配置面板保存时，插件通过 `configEditor` 把配置写回当前 profile 的 `cordis.patch.yml`，落点是**顶层 `- id: vmic` 条目**的 `config`（不是 `insert` 里的那份）。想手工改配置，改那条即可；`insert` 只负责声明插件行，可以不带 `config`。
+
+```yaml
+- insert:
+    - id: vmic
+      name: 'dsh-vmic'
+- id: vmic
+  config:
+    selectedProvider: xiaomi-mimo
+    timeoutMs: 30000
+```
+
 ## 宿主路由（host half）
 
 | 路由 | 说明 |
@@ -122,7 +136,8 @@ pnpm add github:Calvin451970353/dsh-vmic
 ## 已知限制
 
 - 浏览器录制编码为 16kHz 单声道 WAV；小米 MiMo 对 base64 输入有 10MB 上限（约 5 分钟，远超语音输入场景）。
-- 修改 `cordis.patch.yml` 或插件配置后需要**重启 `dsh web`** 服务。
+- 插件配置字段都是 `.volatile()`，面板保存后由 `configEditor` 热应用，**不需要重启**；改了插件代码（`lib/*.js`）仍需重启 `dsh web`。
+- 若插件被判为与当前 DSH 版本不兼容，服务端会打印 `disabling profile plugin row "vmic"` 并跳过该行：先确认版本，再按需 `dsh plugin --profile web allow-version dsh-vmic@<版本> --dsh-version <当前版本> --accept-risk`。
 - 客户端 bundle 改动仅在 `pnpm run dev:web` 监听运行时热更新；否则需重启服务并刷新页面。
 
 ## License

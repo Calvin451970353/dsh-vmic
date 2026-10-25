@@ -1,0 +1,11 @@
+# Bundle patch for dsh-vmic.
+# Listed by `dsh.bundle.patch` in package.json, so a profile that adds this
+# package to `dsh.profile.bundles` (or installs it from the plugin manager /
+# market, which does that for you) mounts the mic row without any hand-edited
+# profile patch.
+#
+# Row id `vmic` is the address the plugin's config panel writes back to; the
+# actual values stay in the profile's own cordis.patch.yml, never here.
+- insert:
+    - id: vmic
+      name: 'dsh-vmic'
